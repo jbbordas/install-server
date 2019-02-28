@@ -1,7 +1,7 @@
 #!/bin/bash
 #change root password
 if [  !-z "${SSH_ROOT_NEW_PWD}" ];
-echo -e "${SSH_ROOT_NEW_PWD}\n${SSH_ROOT_NEW_PWD}" | (passwd --stdin )root
+echo root:${SSH_ROOT_NEW_PWD} | chpasswd
 if (($?)); then exit 5; fi
 #ecrirLog "root:${SSH_ROOT_NEW_PWD} | chpasswd"
 else

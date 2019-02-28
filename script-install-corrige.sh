@@ -30,6 +30,10 @@
 #if null the log will be only in the output
 FICLOG=/var/log/install.log
 
+#set Git parameter
+GIT_USERNAME=username
+GIT_MAIL=email@domain.ltd
+
 # Set the port you want to use for ssh :
 SSH_PORT=1212
 
@@ -91,13 +95,11 @@ if (($?)); then exit 4; fi
 apt-get install -yq git   
 git init
 # Identity Name
-git config --global user.name "jbbordas"
+git config --global user.name "${GIT_USERNAME}"
 # Identity Email
-git config --global user.email "jbbordas87@hotmail.com"
+git config --global user.email "${GIT_MAIL}"
 
-
-
-git clone https://github.com/jbbordas/Serveur-backup.git install
+git clone https://github.com/jbbordas/install-server.git install
 
 #Change root Password
 ./rootPwd.sh

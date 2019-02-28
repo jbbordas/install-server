@@ -5,7 +5,7 @@ if [ $? -ne 0 ]; then
 	ecrirLog "[ WARN ] the User doesn't existe, we need to create it"
 	adduser --disabled-password --gecos "" "$SSH_USER"
 	if (($?)); then exit 11; fi
-	echo ' "${SSH_USER}:${SSH_USER_PWD}" | chpasswd'
+	echo "${SSH_USER}:${SSH_USER_PWD}" | chpasswd
 	if (($?)); then exit 12-1; fi
 	usermod -a -G sudo "$SSH_USER"
 	if (($?)); then exit 12; fi
