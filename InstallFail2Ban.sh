@@ -1,4 +1,18 @@
 #!/bin/bash
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
+
 command -v fail2ban >/dev/null 2>&1 || {
 ecrirLog "[ WARN ] fail2ban command is not install. We are going to do it!"
 # sudo non installer, on l'install

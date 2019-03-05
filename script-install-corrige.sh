@@ -72,8 +72,21 @@ PORTSENTRY_IGNORE[1]=8.8.4.4
 #   /!\  Unless you know exactly what you're doing, do not change anything  /!\   #
 #                                     /!\                                         #
 ###################################################################################
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
+
 export DEBIAN_FRONTEND=noninteractive
-./functions.sh
 # Check is linux is Debian based:
 if [ ! -f /etc/debian_version ]; then
 ecrirLog "[ ERR ] This script has been writen for Debian-based distros."
@@ -100,6 +113,9 @@ git config --global user.name "${GIT_USERNAME}"
 git config --global user.email "${GIT_MAIL}"
 
 git clone https://github.com/jbbordas/install-server.git install
+
+chmod -R 744 install/
+if (($?)); then exit 5; fi
 
 #Change root Password
 ./rootPwd.sh

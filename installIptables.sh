@@ -1,5 +1,18 @@
 #!/bin/bash
 # FireWall installation and Configuration
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
 command -v iptables >/dev/null 2>&1 || {
 ecrirLog "[ WARN ] iptables command is not install. We are going to do it!"
 # sudo non installer, on l'install

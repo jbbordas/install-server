@@ -2,6 +2,19 @@
 ###############
 #     SSH     #
 ###############
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
 ecrirLog "configuration SSH"
 sed -i "s/#Port 22/Port $SSH_PORT/g" /etc/ssh/sshd_config                     # Change ssh port
 if (($?)); then exit 23; fi

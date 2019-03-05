@@ -2,6 +2,19 @@
 ################
 #      NTP          #
 ################
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
 ecrirLog "configuration de NTP"
 apt-get -yq install ntp
 if (($?)); then exit 17; fi

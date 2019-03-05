@@ -3,6 +3,18 @@
 ################
 #   shellinabox  #
 ################
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
 ecrirLog "Configuration Shellinabox"
 apt-get install shellinabox nginx -y
 if (($?)); then exit 59; fi

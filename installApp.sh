@@ -1,4 +1,15 @@
 #!/bin/bash
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
 #install sudo, setcap, tar, python-twisted if needed
 command -v sudo >/dev/null 2>&1 || {
 ecrirLog "[ WARN ] sudo command is not install. We are going to do it!"

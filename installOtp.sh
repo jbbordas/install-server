@@ -1,5 +1,18 @@
 #!/bin/bash
 #install OTP
+
+ecrirLog()
+{
+	if [  !-z "${FICLOG}" ];
+	then
+	 #  temporairement on log quand même en console
+	    echo -e "$1"
+		echo -e "$1" >> ${FICLOG}
+	else
+		echo -e "$1"
+	fi
+}
+
 apt-get install -yq  libpam-google-authenticator 
 if (($?)); then exit 13; fi
 
