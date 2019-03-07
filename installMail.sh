@@ -52,7 +52,6 @@ dc_localdelivery='mail_spool'
     systemctl restart exim4
     if (($?)); then exit 16; fi
     #questionOuiExit "Is every thing OK for now mail has been install and configured?"
-    fi
 }
 
 
