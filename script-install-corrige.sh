@@ -75,7 +75,7 @@ PORTSENTRY_IGNORE[1]=8.8.4.4
 
 ecrirLog()
 {
-	if [  !-z "${FICLOG}" ];
+	if [  -n "${FICLOG}" ];
 	then
 	 #  temporairement on log quand même en console
 	    echo -e "$1"
@@ -118,37 +118,40 @@ chmod -R 744 install/
 if (($?)); then exit 5; fi
 
 #Change root Password
-./rootPwd.sh
-
+./install/rootPwd.sh
+changeRootPwd()
 #Install application if needed sudo, setcap, tar, python
-./installApp.sh
+./install/installApp.sh
+installApplication()
 
 #create User 
-./installUser.sh
+./install/installUser.sh
+installUser()
 
 #install mail, and configure it
-./installMail.sh
+./install/installMail.sh
+installMail
 
 #Install and configure NTP
-./installNtp.sh
+./install/installNtp.sh
 
 #Configure SSH
-./installSsh.sh
+./install/installSsh.sh
 
 #install firewall and configure it
-./installIptables.sh
+./install/installIptables.sh
 
 #install portsentry and configure it
 #@TODO: change mail in variable
-./installPortsentry.sh
+./install/installPortsentry.sh
 
 #install fail2ban and configure it
 #@TODO: change mail in variable
-./InstallFail2Ban.sh
+./install/InstallFail2Ban.sh
 
-./installNgixShellinaboxMunin.sh
+./install/installNgixShellinaboxMunin.sh
 
-./installOtp.sh
+./install/installOtp.sh
 
 ###############
 #  Finishing  #

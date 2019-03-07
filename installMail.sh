@@ -2,29 +2,20 @@
 ###############
 #     MAIL    #
 ###############
-ecrirLog()
+installMail()
 {
-	if [  !-z "${FICLOG}" ];
-	then
-	 #  temporairement on log quand même en console
-	    echo -e "$1"
-		echo -e "$1" >> ${FICLOG}
-	else
-		echo -e "$1"
-	fi
-}
-command -v mail >/dev/null 2>&1 || {
-ecrirLog "[ WARN ] mail command is not install. We are going to do it!"
-# sudo non installer, on l'install
-apt-get -yq install mailutils
-if (($?)); then exit 10; fi
-}
+    command -v mail >/dev/null 2>&1 || {
+        ecrirLog "[ WARN ] mail command is not install. We are going to do it!"
+        # sudo non installer, on l'install
+        apt-get -yq install mailutils
+        if (($?)); then exit 10; fi
+    }
 
-# fichier de conf de exim4
-ecrirLog "configuration de MAIL"
-mv /etc/exim4/update-exim4.conf.conf /etc/exim4/update-exim4.conf.conf.old
-if (($?)); then exit 14; fi
-echo "  
+    # fichier de conf de exim4
+    ecrirLog "configuration de MAIL"
+    mv /etc/exim4/update-exim4.conf.conf /etc/exim4/update-exim4.conf.conf.old
+    if (($?)); then exit 14; fi
+    echo "  
 # /etc/exim4/update-exim4.conf.conf
 #
 # Edit this file and /etc/mailname by hand and execute update-exim4.conf
@@ -57,9 +48,11 @@ dc_hide_mailname=''
 dc_mailname_in_oh='true'
 dc_localdelivery='mail_spool'
 "> /etc/exim4/update-exim4.conf.conf
-if (($?)); then exit 15; fi
-systemctl restart exim4
-if (($?)); then exit 16; fi
-#questionOuiExit "Is every thing OK for now mail has been install and configured?"
+    if (($?)); then exit 15; fi
+    systemctl restart exim4
+    if (($?)); then exit 16; fi
+    #questionOuiExit "Is every thing OK for now mail has been install and configured?"
+    fi
+}
 
 
