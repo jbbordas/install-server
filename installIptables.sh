@@ -1,30 +1,20 @@
 #!/bin/bash
 # FireWall installation and Configuration
 
-ecrirLog()
+installIpTable()
 {
-	if [  !-z "${FICLOG}" ];
-	then
-	 #  temporairement on log quand même en console
-	    echo -e "$1"
-		echo -e "$1" >> ${FICLOG}
-	else
-		echo -e "$1"
-	fi
-}
+    command -v iptables >/dev/null 2>&1 || {
+        ecrirLog "[ WARN ] iptables command is not install. We are going to do it!"
+        # sudo non installer, on l'install
+        apt-get -yq install iptables
+        if (($?)); then exit 9; fi
+    }
 
-command -v iptables >/dev/null 2>&1 || {
-ecrirLog "[ WARN ] iptables command is not install. We are going to do it!"
-# sudo non installer, on l'install
-apt-get -yq install iptables
-if (($?)); then exit 9; fi
-}
-
-###############
-#  iptables   #
-###############
-ecrirLog "configuration iptables"
-echo "  
+    #############
+    #    iptables     #
+   #############
+    ecrirLog "configuration iptables"
+    echo "  
 #!/bin/sh
 #https://www.jgachelin.fr/vps-ovh-debian-8-gestion-de-la-securite/
 
@@ -82,22 +72,25 @@ iptables -A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
 iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
 
 "> firewall
-if (($?)); then exit 31; fi
-for i in "${PORT_OPEN[@]}"; do
-echo "iptables -A INPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
-if (($?)); then exit 32; fi
-echo "iptables -A OUTPUT -p tcp --sport $i -j ACCEPT                          # Set specified rules." >> firewall
-if (($?)); then exit 33; fi
-done
+    if (($?)); then exit 31; fi
+    for i in "${PORT_OPEN[@]}"; do
+        echo "iptables -A INPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
+        if (($?)); then exit 32; fi
+        echo "iptables -A OUTPUT -p tcp --sport $i -j ACCEPT                          # Set specified rules." >> firewall
+        if (($?)); then exit 33; fi
+    done
 
-chmod +x firewall
-if (($?)); then exit 33; fi
+    chmod +x firewall
+    if (($?)); then exit 33; fi
 
-mv firewall /etc/init.d/firewall
-if (($?)); then exit 34; fi
-/etc/init.d/firewall
-if (($?)); then exit 35; fi
-update-rc.d firewall defaults
-if (($?)); then exit 36; fi
+    mv firewall /etc/init.d/firewall
+    if (($?)); then exit 34; fi
+    /etc/init.d/firewall
+    if (($?)); then exit 35; fi
+    update-rc.d firewall defaults
+    if (($?)); then exit 36; fi
 
 #questionOuiExit "Is every thing OK for now? Ipatables has been configured"
+
+}
+

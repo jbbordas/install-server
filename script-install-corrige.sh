@@ -48,6 +48,13 @@ SSH_USER_PWD="passwordssh"
 #set the email adresse for ssh connexion notification
 SSH_MAIL_RECEVER="email@domaine.ltd" 
 
+#set the email adresse for PortsEntry notification
+PORTSENTRY_MAIL_RECEVER=$SSH_MAIL_RECEVER
+
+#set the email adresse for Fail2ban notification
+FAILTOBAN_MAIL_RECEVER=$SSH_MAIL_RECEVER
+FAILTOBAN_MAIL_SENDER=$SSH_MAIL_RECEVER
+
 # Set ban time in seconds (default to 1h):
 F2B_BAN_TIME=600
 
@@ -118,46 +125,54 @@ chmod -R 744 install/
 if (($?)); then exit 5; fi
 
 #Change root Password
-./install/rootPwd.sh
-changeRootPwd()
+source ./install/rootPwd.sh
+changeRootPwd
 #Install application if needed sudo, setcap, tar, python
-./install/installApp.sh
-installApplication()
+source ./install/installApp.sh
+installApplication
 
 #create User 
-./install/installUser.sh
-installUser()
+source ./install/installUser.sh
+installUser
 
 #install mail, and configure it
-./install/installMail.sh
+source ./install/installMail.sh
 installMail
 
 #Install and configure NTP
-./install/installNtp.sh
+source ./install/installNtp.sh
+installNtp
 
 #Configure SSH
-./install/installSsh.sh
+source ./install/installSsh.sh
+installSsh
 
 #install firewall and configure it
-./install/installIptables.sh
+source ./install/installIptables.sh
+installIpTable
 
 #install portsentry and configure it
-#@TODO: change mail in variable
-./install/installPortsentry.sh
+source ./install/installPortsentry.sh
+installPortsEntry
 
 #install fail2ban and configure it
-#@TODO: change mail in variable
-./install/InstallFail2Ban.sh
+source ./install/InstallFail2Ban.sh
+installFailToBan
 
-./install/installNgixShellinaboxMunin.sh
+source ./install/installNgixShellinaboxMunin.sh
+installNgInx
 
-./install/installOtp.sh
+source ./install/installOtp.sh
+installOtp
 
 ###############
 #  Finishing  #
 ###############
 
 ecrirLog "Everything is installed."
+
+cat $FICLOG | mail -s "[ hostname ] Fin installation " $SSH_MAIL_RECEVER
+
 
 
 #echo " "
