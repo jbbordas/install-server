@@ -44,6 +44,15 @@ iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT # Don't break 
 iptables -t filter -A INPUT -i lo -j ACCEPT  # Allow input on loopback.
 iptables -t filter -A OUTPUT -o lo -j ACCEPT # Allow input on loopback.
 
+
+# DNS In/Out 
+# do you have a DNS ?
+# if not, you just need Out
+iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+iptables -A INPUT -p udp --dport 53 -j ACCEPT 
+iptables -A INPUT -p udp --dport 53 -j ACCEPT
+
 # Chain for preventing ping flooding - up to 6 pings per second from a single
 # source, again with log limiting. Also prevents us from ICMP REPLY flooding
 # some victim when replying to ICMP ECHO from a spoofed source.

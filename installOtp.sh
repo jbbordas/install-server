@@ -22,7 +22,7 @@ installOtp()
     if (($?)); then exit 83; fi
     echo "Activate 2FA (One Time Password on login) :"
     echo "# Activate 2FA (One Time Password on login) :" >> /etc/pam.d/sshd
-    echo "    auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
+ #   echo " auth required pam_google_authenticator.so" >> /etc/pam.d/sshd
     if (($?)); then exit 84; fi
 #sed -i "s/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g" /etc/ssh/sshd_config
 #if (($?)); then exit 84; fi
