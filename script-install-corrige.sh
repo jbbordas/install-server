@@ -61,6 +61,22 @@ F2B_BAN_TIME=600
 # Set max retries before ban (default to 3):
 F2B_RETRY=4
 
+# Set the serveur hostname:
+SERVER_HOSTNAME=
+
+# Set the email adresse for RkHunter notification
+RKHUNTER_MAIL_RECEVER=$SSH_MAIL_RECEVER
+
+#set the email adresse for  the update security notification
+UPDATE_SECURITY_MAIL_RECEVER=SSH_MAIL_RECEVER
+
+#set the email adresse for  the LogCheck notification
+LOGCHECK_MAIL_RECEVER=SSH_MAIL_RECEVER
+
+#set the email adresse for  the LogCheck notification
+LOGWATCH_MAIL_RECEVER=SSH_MAIL_RECEVER
+LOGWATCH_MAIL_SENDER=SSH_MAIL_RECEVER
+
 # Set the ports you need to be open :
 PORT_OPEN[0]=80     # HTTP
 PORT_OPEN[1]=443    # HTTPS
@@ -161,6 +177,12 @@ installFailToBan
 
 source ./install/installNgixShellinaboxMunin.sh
 installNgInx
+
+source ./install/installSecurityUpgrade.sh
+installSecurityUpdate
+
+source ./install/installLogwatch.sh
+installLogwatch
 
 source ./install/installOtp.sh
 installOtp

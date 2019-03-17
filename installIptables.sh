@@ -44,7 +44,6 @@ iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT # Don't break 
 iptables -t filter -A INPUT -i lo -j ACCEPT  # Allow input on loopback.
 iptables -t filter -A OUTPUT -o lo -j ACCEPT # Allow input on loopback.
 
-
 # DNS In/Out 
 # do you have a DNS ?
 # if not, you just need Out
@@ -53,23 +52,18 @@ iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 iptables -A INPUT -p udp --dport 53 -j ACCEPT 
 iptables -A INPUT -p udp --dport 53 -j ACCEPT
 
-# Chain for preventing ping flooding - up to 6 pings per second from a single
-# source, again with log limiting. Also prevents us from ICMP REPLY flooding
-# some victim when replying to ICMP ECHO from a spoofed source.
-iptables -N ICMPFLOOD
-iptables -A ICMPFLOOD -m recent --name ICMP --set --rsource
-iptables -A ICMPFLOOD -m recent --name ICMP --update --seconds 1 --hitcount 6 --rsource --rttl -m limit --limit 1/sec --limit-burst 1 -j LOG --log-prefix \"iptables[ICMP-flood]: \"
-iptables -A ICMPFLOOD -m recent --name ICMP --update --seconds 1 --hitcount 6 --rsource --rttl -j DROP
-iptables -A ICMPFLOOD -j ACCEPT
 
-# Permit useful IMCP packet types.
 # Note: RFC 792 states that all hosts MUST respond to ICMP ECHO requests.
 # Blocking these can make diagnosing of even simple faults much more tricky.
 # Real security lies in locking down and hardening all services, not by hiding.
-iptables -A INPUT -p icmp --icmp-type 0  -m conntrack --ctstate NEW -j ACCEPT
-iptables -A INPUT -p icmp --icmp-type 3  -m conntrack --ctstate NEW -j ACCEPT
-iptables -A INPUT -p icmp --icmp-type 8  -m conntrack --ctstate NEW -j ICMPFLOOD
-iptables -A INPUT -p icmp --icmp-type 11 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT 
+iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT 
+iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT 
+iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT 
+iptables -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT 
+iptables -A INPUT -p icmp --icmp-type source-quench -j ACCEPT 
+iptables -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT 
+iptables -A INPUT -p icmp --icmp-type parameter-problem -j ACCE
 
 # Drop all incoming malformed NULL packets
 iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
@@ -85,13 +79,12 @@ iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
     for i in "${PORT_OPEN[@]}"; do
         echo "iptables -A INPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
         if (($?)); then exit 32; fi
-        echo "iptables -A OUTPUT -p tcp --sport $i -j ACCEPT                          # Set specified rules." >> firewall
+        echo "iptables -A OUTPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
         if (($?)); then exit 33; fi
     done
 
     chmod +x firewall
     if (($?)); then exit 33; fi
-
     mv firewall /etc/init.d/firewall
     if (($?)); then exit 34; fi
     /etc/init.d/firewall

@@ -26,7 +26,7 @@ AllowUsers "$SSH_USER"
     echo "SSH_MAIL_RECEVER=$SSH_MAIL_RECEVER">> /etc/bash.bashrc
     if (($?)); then exit 27; fi
     VARI=$(cat <<IEE
-echo 'NOTIFICATION - Acces SSH :' `hostname` 'le:' `date +'%d/%m/%Y'` `who | grep -v localhost` | mail -s "[ `hostname` ] NOTIFICATION - Acces SSH le: `date +'%Y/%m/%d'` `whoami`" $SSH_MAIL_RECEVER
+echo 'NOTIFICATION - Acces SSH :' \`hostname\` 'le:' \`date +'%d/%m/%Y'\` \`who | grep -v localhost\` | mail -s "[ \`hostname\` ] NOTIFICATION - Acces SSH le: \`date +'%Y/%m/%d'\` \`whoami\`" $SSH_MAIL_RECEVER
 IEE
 )
     echo $VARI >> /etc/bash.bashrc
