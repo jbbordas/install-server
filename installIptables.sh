@@ -87,6 +87,7 @@ iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
     if (($?)); then exit 33; fi
     mv firewall /etc/init.d/firewall
     if (($?)); then exit 34; fi
+     ecrirLog "lancement des iptables"
     /etc/init.d/firewall
     if (($?)); then exit 35; fi
     update-rc.d firewall defaults
