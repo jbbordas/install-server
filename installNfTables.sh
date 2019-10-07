@@ -13,66 +13,62 @@ installIpTable()
     #############
     #    nftables     #
    #############
-    ecrirLog "configuration iptables"
+    ecrirLog "configuration nftable"
     echo "  
-#!/bin/sh
-#https://www.jgachelin.fr/vps-ovh-debian-8-gestion-de-la-securite/
+#!/usr/sbin/nft -f
+#https://docs.snowme34.com/en/latest/reference/devops/debian-firewall-nftables-and-iptables.html
+flush ruleset
 
-### BEGIN INIT INFO
-# Provides:             firewall
-# Required-Start:       $remote_fs $syslog
-# Required-Stop:        $remote_fs $syslog
-# Default-Start:        2 3 4 5 
-# Default-Stop:         0 1 6
-# Short-Description:    Start iptables rules
-# Description:          Start iptables rules
-### END INIT INFO
-# Vider les tables et règles
-iptables -t filter -F  # Flush existing rules.
-iptables -t filter -X # Delete user defined rules.
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
 
-# Bloquer tout le trafic
-iptables -t filter -P INPUT DROP # Drop all input connections.
-iptables -t filter -P FORWARD DROP # Drop all output connections.
-iptables -t filter -P OUTPUT DROP # Drop all forward connections.
+        iifname lo accept
 
-# Conserver les connexions en cours
-iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT # Don't break established connections.
-iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT # Don't break established connections.
+        tcp dport 22 ct state new accept # change to your own ssh port
+        ct state established,related accept
 
-# Localhost
-iptables -t filter -A INPUT -i lo -j ACCEPT  # Allow input on loopback.
-iptables -t filter -A OUTPUT -o lo -j ACCEPT # Allow input on loopback.
+        # no ping floods:
+        ip protocol icmp icmp type echo-request limit rate over 10/second burst 4 packets drop
+        ip6 nexthdr icmpv6 icmpv6 type echo-request limit rate over 10/second burst 4 packets drop
 
-# DNS In/Out 
-# do you have a DNS ?
-# if not, you just need Out
-iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
-iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
-iptables -A INPUT -p udp --dport 53 -j ACCEPT 
-iptables -A INPUT -p udp --dport 53 -j ACCEPT
+        # ICMP & IGMP
+        ip6 nexthdr icmpv6 icmpv6 type { echo-request, destination-unreachable, packet-too-big, time-exceeded, parameter-problem, mld-listener-query, mld-listener-report, mld-listener-reduction, nd-router-solicit, nd-router-advert, nd-neighbor-solicit, nd-neighbor-advert, nd-neighbor-solicit, nd-neighbor-advert, mld-listener-report } accept
+        ip protocol icmp icmp type { echo-request, destination-unreachable, router-solicitation, router-advertisement, time-exceeded, parameter-problem } accept
+        ip protocol igmp accept
 
+        # avoid brute force on ssh, and your ssh port here
+        tcp dport 22 ct state new limit rate 15/minute accept # change to your own ssh port
 
-# Note: RFC 792 states that all hosts MUST respond to ICMP ECHO requests.
-# Blocking these can make diagnosing of even simple faults much more tricky.
-# Real security lies in locking down and hardening all services, not by hiding.
-iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT 
-iptables -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT 
-iptables -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT 
-iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT 
-iptables -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT 
-iptables -A INPUT -p icmp --icmp-type source-quench -j ACCEPT 
-iptables -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT 
-iptables -A INPUT -p icmp --icmp-type parameter-problem -j ACCE
+        # http server
+        tcp dport { http, https} ct state established,new accept
+        udp dport { http, https} ct state established,new accept
 
-# Drop all incoming malformed NULL packets
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP
+        # some ports you like
+        #tcp dport { xxx, yyy} ct state established,new accept
+        #udp dport { xxx, yyy} ct state established,new accept
 
-# Drop syn-flood attack packets
-iptables -A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
+        ct state invalid drop
 
-# Drop incoming malformed XMAS packets
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+        # uncomment to enable log, choose one
+        #log flags all counter drop
+        #log prefix "[nftables] Input Denied: " flags all counter drop
+    }
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        tcp dport { http, https } ct state { established,new } accept
+        udp dport { http, https } ct state { established,new } accept
+        # for dockers
+        # dockers have plenty of networks, so it may be required to change accordingly
+        iifname eth0 oifname docker0 ct state { established,new,related } accept
+        oifname eth0 ct state { established,new,related } accept
+        # uncomment to enable log
+        #log prefix "[nftables] Forward Denied: " flags all counter drop
+    }
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}
 
 "> firewall
     if (($?)); then exit 31; fi
