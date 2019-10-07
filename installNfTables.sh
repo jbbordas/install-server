@@ -1,28 +1,17 @@
 #!/bin/bash
-# FireWall installation and Configuration
+# FireWall nftables installation and Configuration
 
 installIpTable()
 {
-    command -v iptables >/dev/null 2>&1 || {
-        ecrirLog "[ WARN ] iptables command is not install. We are going to do it!"
-        # sudo non installer, on l'install
-        apt-get -yq install iptables
+    command -v nft >/dev/null 2>&1 || {
+        ecrirLog "[ WARN ] nft command is not install. We are going to do it!"
+        # nft non installer, on l'install
+        apt-get -yq install nftables
         if (($?)); then exit 9; fi
     }
- # On debian 10 iptables change 
-  command -v iptables >/dev/null 2>&1 || {
-        ecrirLog "[ WARN ] iptables is not reconized we try to find it"
-      echo 'export PATH=$PATH:/usr/sbin' >> /root/.bashrc       
-       if (($?)); then exit 9; fi
-       echo 'export PATH=$PATH:/usr/sbin' >> /home/${SSH_USER}/.bashrc       
-       if (($?)); then exit 9; fi
-    
-    command -v iptables >/dev/null 2>&1 || {
-        ecrirLog "[ ERROR ] iptables won't be functional"
-     }   
- 
+
     #############
-    #    iptables     #
+    #    nftables     #
    #############
     ecrirLog "configuration iptables"
     echo "  
