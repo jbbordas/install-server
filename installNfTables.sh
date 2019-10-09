@@ -1,7 +1,7 @@
 #!/bin/bash
 # FireWall nftables installation and Configuration
 
-installIpTable()
+installNfTables()
 {
     command -v nft >/dev/null 2>&1 || {
         ecrirLog "[ WARN ] nft command is not install. We are going to do it!"
@@ -24,8 +24,13 @@ table inet filter {
         type filter hook input priority 0; policy drop;
 
         iifname lo accept
+        ct state invalid drop
+        ct state new,related tcp flags & (fin|syn|rst|psh|ack|urg) != syn limit rate 2/second burst 3 packets  log prefix \"TCP INPUT without SYN \" drop
+        tcp flags & (fin|syn|rst|psh|ack|urg) eq 0 limit rate 2/second burst 3 packets log prefix \"INPUT_NULL \" drop
+        tcp flags & (fin|psh|urg) eq (fin|psh|urg) limit rate 2/second burst 3 packets log prefix \"INPUT_XMASS \" drop
+       
 
-        tcp dport 22 ct state new accept # change to your own ssh port
+        tcp dport ${SSH_PORT}  ct state new accept # change to your own ssh port
         ct state established,related accept
 
         # no ping floods:
@@ -38,21 +43,21 @@ table inet filter {
         ip protocol igmp accept
 
         # avoid brute force on ssh, and your ssh port here
-        tcp dport 22 ct state new limit rate 15/minute accept # change to your own ssh port
+        tcp dport ${SSH_PORT} ct state new limit rate 15/minute accept # change to your own ssh port
 
         # http server
         tcp dport { http, https} ct state established,new accept
         udp dport { http, https} ct state established,new accept
 
         # some ports you like
-        #tcp dport { xxx, yyy} ct state established,new accept
-        #udp dport { xxx, yyy} ct state established,new accept
+        tcp dport { NTP, SMTP} ct state established,new accept
+        udp dport { NTP, SMTP} ct state established,new accept
 
         ct state invalid drop
 
         # uncomment to enable log, choose one
         #log flags all counter drop
-        #log prefix "[nftables] Input Denied: " flags all counter drop
+        #log prefix \"[nftables] Input Denied: \" flags all counter drop
     }
     chain forward {
         type filter hook forward priority 0; policy drop;
@@ -60,10 +65,10 @@ table inet filter {
         udp dport { http, https } ct state { established,new } accept
         # for dockers
         # dockers have plenty of networks, so it may be required to change accordingly
-        iifname eth0 oifname docker0 ct state { established,new,related } accept
-        oifname eth0 ct state { established,new,related } accept
+        #iifname eth0 oifname docker0 ct state { established,new,related } accept
+        #oifname eth0 ct state { established,new,related } accept
         # uncomment to enable log
-        #log prefix "[nftables] Forward Denied: " flags all counter drop
+        #log prefix \"[nftables] Forward Denied: \" flags all counter drop
     }
     chain output {
         type filter hook output priority 0; policy accept;
@@ -71,23 +76,14 @@ table inet filter {
 }
 
 "> firewall
-    if (($?)); then exit 31; fi
-    for i in "${PORT_OPEN[@]}"; do
-        echo "iptables -A INPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
-        if (($?)); then exit 32; fi
-        echo "iptables -A OUTPUT -p tcp --dport $i -j ACCEPT                          # Set specified rules." >> firewall
-        if (($?)); then exit 33; fi
-    done
-
-    chmod +x firewall
-    if (($?)); then exit 33; fi
-    mv firewall /etc/init.d/firewall
+    cp /etc/nftables.conf /etc/nftables.conf.bak
+     mv firewall /etc/nftables.conf
     if (($?)); then exit 34; fi
      ecrirLog "lancement des iptables"
-    /etc/init.d/firewall
+    systemctl enable nftables
     if (($?)); then exit 35; fi
-    update-rc.d firewall defaults
-    if (($?)); then exit 36; fi
+    systemctl start nftables
+   if (($?)); then exit 36; fi
 
 #questionOuiExit "Is every thing OK for now? Ipatables has been configured"
 

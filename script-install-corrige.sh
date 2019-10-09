@@ -77,7 +77,7 @@ LOGCHECK_MAIL_RECEVER=$SSH_MAIL_RECEVER
 LOGWATCH_MAIL_RECEVER=$SSH_MAIL_RECEVER
 LOGWATCH_MAIL_SENDER=$SSH_MAIL_RECEVER
 
-# Set the ports you need to be open :
+# Set the ports you need to be open by iptable :
 PORT_OPEN[0]=80     # HTTP
 PORT_OPEN[1]=443    # HTTPS
 PORT_OPEN[2]=123    # NTP
@@ -164,8 +164,11 @@ source ./install/installSsh.sh
 installSsh
 
 #install firewall and configure it
-source ./install/installIptables.sh
-installIpTable
+#source ./install/installIptables.sh
+#installIpTable
+#install firewall and configure it
+source ./install/installNfTables.sh
+installNfTables
 
 #install portsentry and configure it
 source ./install/installPortsentry.sh
