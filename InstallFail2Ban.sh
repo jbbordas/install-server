@@ -75,7 +75,8 @@ protocol  = 0-255
     if (($?)); then exit 56; fi
     sed -i "s/action = %(action_)s/action = %(action_mwl)s/g" /etc/fail2ban/jail.local
     if (($?)); then exit 57; fi
-    sed -i "s/banaction = iptables-multiports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
+    sed -i "s/banaction = nftables-multiports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
+    sed -i "s/banaction_allports = nftables-allports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
       if (($?)); then exit 57; fi
     sed -i "s/chain = <known/chain>s/chain = inputs/g" /etc/fail2ban/jail.local
     if (($?)); then exit 57; fi

@@ -98,34 +98,45 @@ PORTSENTRY_IGNORE[1]=8.8.4.4
 
 ecrirLog()
 {
+	heure=$(date +%H%M)
+	jour=$(date +%Y%m%d)
 	if [  -n "${FICLOG}" ];
 	then
-	 #  temporairement on log quand même en console
-	    echo -e "$1"
-		echo -e "$1" >> ${FICLOG}
+	    echo -e "$2 $jour $heure : $1"
+		echo -e "$2 $jour $heure : $1">> ${FICLOG}
 	else
-		echo -e "$1"
-	fi
+		echo -e "$2 $jour $heure : $1"
+	fi	
+}
+
+# exemple: exitError "error message"
+exitError()
+{
+	ecrirLog "code erreur : $1" "ERROR"
+	ecrirLog $1 "ERROR"
+	command -V  $1 &>/dev/null
+    if [ $? -eq 0 ]; then
+       cat $FICLOG | mail -s "[ hostname ] ERREUR installation " $SSH_MAIL_RECEVER
+    fi
+	exit 1;
 }
 
 
 export DEBIAN_FRONTEND=noninteractive
 # Check is linux is Debian based:
 if [ ! -f /etc/debian_version ]; then
-ecrirLog "[ ERR ] This script has been writen for Debian-based distros."
-exit 1
+exitError  "This script has been writen for Debian-based distros." "1"
 fi
 
 # Check if root or sudo:
 if [[ $(id -u) -ne 0 ]] ; then 
-ecrirLog  '[ ERR ]Please run me as root or with sudo'
-exit 2
+exitError  'Please run me as root or with sudo' "2"
 fi
 
 apt-get -yq update 
-if (($?)); then exit 3; fi
+if (($?)); then exitError  "Impossible  de faire un apt get update." "3"; fi
 apt-get -yq upgrade
-if (($?)); then exit 4; fi
+if (($?)); then exitError  "Impossible  de faire un apt get upgrade." "4"; fi
 
 #intallation de Gith et récupération du reste des scripts:
 apt-get install -yq git   
@@ -136,9 +147,9 @@ git config --global user.name "${GIT_USERNAME}"
 git config --global user.email "${GIT_MAIL}"
 
 git clone https://github.com/jbbordas/install-server.git install
-
+if (($?)); then exitError  "Impossible de clonner le repo GIT." "5"; fi
 chmod -R 744 install/
-if (($?)); then exit 5; fi
+if (($?)); then exitError  "Impossible de modifier les droits sur un dossier." "6"; fi
 
 #Change root Password
 source ./install/rootPwd.sh
@@ -171,8 +182,8 @@ source ./install/installNfTables.sh
 installNfTables
 
 #install portsentry and configure it
-source ./install/installPortsentry.sh
-installPortsEntry
+#source ./install/installPortsentry.sh
+#installPortsEntry
 
 #install fail2ban and configure it
 source ./install/InstallFail2Ban.sh
@@ -196,15 +207,13 @@ installOtp
 
 ecrirLog "Everything is installed."
 
-cat $FICLOG | mail -s "[ hostname ] Fin installation " $SSH_MAIL_RECEVER
-
-
-
 #echo " "
 #echo -e "IMPORTANT:"
 #echo -e "----------"
 #echo " "
 #echo -e "Before closing this session, open a second one and try to connect to this server."
 #echo -e "If the connection is successfull, then you can close safelly."
-ecrirLog " don't forget to check is your server can't be use for spam: http://www.spamhelp.org/shopenrelay/shopenrelaytest.php." 
+ecrirLog " don't forget to check is your server can't be use for spam: http://www.spamhelp.org/shopenrelay/shopenrelaytest.php." "WARNNING"
+
+cat $FICLOG | mail -s "[ hostname ] Fin installation " $SSH_MAIL_RECEVER
 exit 0

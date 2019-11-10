@@ -5,16 +5,16 @@
 installMail()
 {
     command -v mail >/dev/null 2>&1 || {
-        ecrirLog "[ WARN ] mail command is not install. We are going to do it!"
+        ecrirLog "mail command is not install. We are going to do it!" "INFO"
         # sudo non installer, on l'install
         apt-get -yq install mailutils
-        if (($?)); then exit 10; fi
+        if (($?)); then exitError "impossible d'installer le serveur mail" "040"; fi
     }
 
     # fichier de conf de exim4
-    ecrirLog "configuration de MAIL"
+    ecrirLog "configuration de MAIL" "INFO"
     mv /etc/exim4/update-exim4.conf.conf /etc/exim4/update-exim4.conf.conf.old
-    if (($?)); then exit 14; fi
+    if (($?)); then exitError "impossible de copier le fichier de conf" "041"; fi
     echo "  
 # /etc/exim4/update-exim4.conf.conf
 #
@@ -48,9 +48,9 @@ dc_hide_mailname=''
 dc_mailname_in_oh='true'
 dc_localdelivery='mail_spool'
 "> /etc/exim4/update-exim4.conf.conf
-    if (($?)); then exit 15; fi
+    if (($?)); then exitError "impossible d'écrire le fichier de conf" "042"; fi
     systemctl restart exim4
-    if (($?)); then exit 16; fi
+    if (($?)); then exitError "impossible de démarer le service de mail" "043"; fi
     #questionOuiExit "Is every thing OK for now mail has been install and configured?"
 }
 
