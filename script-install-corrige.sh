@@ -64,6 +64,9 @@ F2B_RETRY=4
 # Set the serveur hostname:
 SERVER_HOSTNAME=
 
+#Set the DNS name of the server
+DNSNAME=$SERVER_HOSTNAME
+
 # Set the email adresse for RkHunter notification
 RKHUNTER_MAIL_RECEVER=$SSH_MAIL_RECEVER
 
@@ -205,7 +208,7 @@ installOtp
 #  Finishing  #
 ###############
 
-ecrirLog "Everything is installed."
+ecrirLog "Everything is installed." "INFO"
 
 #echo " "
 #echo -e "IMPORTANT:"
