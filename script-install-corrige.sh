@@ -95,6 +95,10 @@ PORTSENTRY_IGNORE[1]=8.8.4.4
 #RKUNTER conf
 RKHUNTER_MAIL_RECEVER=$SSH_MAIL_RECEVER
 
+#ClamAv conf
+CLAMAV_MAIL_RECEVER=$SSH_MAIL_RECEVER
+CLAMAV_MAIL_SENDER=$SSH_MAIL_RECEVER
+
 
 ###################################################################################
 #                                     /!\                                         #
@@ -206,6 +210,9 @@ installRkhunter
 
 source ./install/installLogwatch.sh
 installLogwatch
+
+source ./install/installClamAv.sh
+installClamAv
 
 source ./install/installOtp.sh
 installOtp
