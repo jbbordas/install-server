@@ -80,17 +80,20 @@ LOGCHECK_MAIL_RECEVER=$SSH_MAIL_RECEVER
 LOGWATCH_MAIL_RECEVER=$SSH_MAIL_RECEVER
 LOGWATCH_MAIL_SENDER=$SSH_MAIL_RECEVER
 
-# Set the ports you need to be open by iptable :
+# Set the ports you need to be open by Firewall :
 PORT_OPEN[0]=80     # HTTP
 PORT_OPEN[1]=443    # HTTPS
 PORT_OPEN[2]=123    # NTP
 PORT_OPEN[3]=25     # SMTP
-PORT_OPEN[4]=$SSH_PORT     # SSH : used for honeypotting
+PORT_OPEN[4]=$SSH_PORT     # SSH : 
 
 
 # Portsentry ignore IPs:
 PORTSENTRY_IGNORE[0]=8.8.8.8
 PORTSENTRY_IGNORE[1]=8.8.4.4
+
+#RKUNTER conf
+RKHUNTER_MAIL_RECEVER=$SSH_MAIL_RECEVER
 
 
 ###################################################################################
@@ -197,6 +200,9 @@ installNgInx
 
 source ./install/installSecurityUpgrade.sh
 installSecurityUpdate
+
+source ./install/installRkhunter.sh
+installRkhunter
 
 source ./install/installLogwatch.sh
 installLogwatch
