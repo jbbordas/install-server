@@ -172,9 +172,9 @@ EOM
     if (($?)); then exitError "impossible de modifier le fichier de conf nginx" "105_1"; fi
     sed -i "s/server_name SERVER_DNS_TO_CHANGE_2;/server_name ${DNSNAME};/g" /etc/nginx/sites-enabled/${DNSNAME}.conf
     if (($?)); then exitError "impossible de modifier le fichier de conf nginx" "105_2"; fi
-    sed -i "s/ssl_certificate_key /etc/letsencrypt/live/SERVER_DNS_TO_CHANGE/privkey.pem;/ssl_certificate_key /etc/letsencrypt/live/${DNSNAME}/privkey.pem;/g" /etc/nginx/sites-enabled/${DNSNAME}.conf
+    sed -i "s|ssl_certificate_key /etc/letsencrypt/live/SERVER_DNS_TO_CHANGE/privkey.pem;|ssl_certificate_key /etc/letsencrypt/live/${DNSNAME}/privkey.pem;|g" /etc/nginx/sites-enabled/${DNSNAME}.conf
     if (($?)); then exitError "impossible de modifier le fichier de conf nginx" "105_3"; fi
-    sed -i "s/ssl_certificate /etc/letsencrypt/live/SERVER_DNS_TO_CHANGE/cert.pem;/ssl_certificate /etc/letsencrypt/live/${DNSNAME}/cert.pem;/g" /etc/nginx/sites-enabled/${DNSNAME}.conf
+    sed -i "s|ssl_certificate /etc/letsencrypt/live/SERVER_DNS_TO_CHANGE/cert.pem;|ssl_certificate /etc/letsencrypt/live/${DNSNAME}/cert.pem;|g" /etc/nginx/sites-enabled/${DNSNAME}.conf
     if (($?)); then exitError "impossible de modifier le fichier de conf nginx" "105_4"; fi
 
     /etc/init.d/nginx restart
