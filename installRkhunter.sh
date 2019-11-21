@@ -15,7 +15,13 @@ if (($?)); then exitError  "Impossible de creer la bdd de RKHUNTER" "151"; fi
 sed -i "s/^MAIL-ON-WARNING=.*/#MAIL-ON-WARNING=/g" /etc/rkhunter.conf
 if (($?)); then exitError  "Impossible de modifier la conf de rkhunter" "152"; fi
 sed -i "s/^#MAIL-ON-WARNING=.*/MAIL-ON-WARNING=${RKHUNTER_MAIL_RECEVER}/" /etc/rkhunter.conf
-if (($?)); then exitError  "Impossible de modifier la conf de rkhunter" "152-1"; fi
+f (($?)); then exitError  "Impossible de modifier la conf de rkhunter" "152-1"; fi
+echo "
+SCRIPTWHITELIST=/usr/bin/egrep
+SCRIPTWHITELIST=/usr/bin/which
+SCRIPTWHITELIST=/usr/bin/fgrep
+SCRIPTWHITELIST=/usr/bin/lwp-request" >>/etc/rkhunter.conf
+if (($?)); then exitError  "Impossible de modifier la conf de rkhunter" "152-2"; fi
 
 crontab -l > mycron 
 echo "0 4 * * * /usr/bin/rkhunter --cronjob --update --quiet" >> mycron
@@ -28,6 +34,6 @@ if (($?)); then exitError  "Impossible de modifier crontab pour rkhunter" "153";
  if (($?)); then exitError  "Impossible de modifier la conf RKHUNTER" "153"; fi 
 
 #on lance la comande pour vérifier que tout est OK:
-command rkhunter --configfile /etc/rkhunter.conf --report-warnings-only --checkall
+rkhunter --configfile /etc/rkhunter.conf --report-warnings-only --checkall
  if (($?)); then exitError  "Impossible de lancer RKHUNTER" "154"; fi
 }
