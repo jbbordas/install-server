@@ -22,6 +22,6 @@ installLogwatch()
  Range = yesterday
  Detail = Medium
  Service = All" > /etc/logwatch/conf/logwatch.conf
-   if (($?)); then exitError "impossible d'écrire la conf de logwatch" "133; fi
+   if (($?)); then exitError "impossible d'écrire la conf de logwatch" "133"; fi
 }
 
