@@ -60,7 +60,7 @@ return 301 https://\$server_name\$request_uri;
 }
 EOM
      if (($?)); then exitError "impossible d'installer NGINX ou Shellinabox" "094"; fi
-     sed -i "s/server_name SERVER_DNS_TO_CHANGE;/server_name ${DNSNAME}/g" /etc/nginx/sites-enabled/${DNSNAME}.conf
+     sed -i "s/server_name SERVER_DNS_TO_CHANGE;/server_name ${DNSNAME};/g" /etc/nginx/sites-enabled/${DNSNAME}.conf
      if (($?)); then exitError "impossible de finir la conf du fichier nginx du serveur" "094-1"; fi
      
     rm /etc/nginx/sites-enabled/default
