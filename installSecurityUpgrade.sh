@@ -5,7 +5,7 @@
 installSecurityUpdate()
 {
 
-    apt-get -yq install cron-apt
+    apt-get -yq install cron-apt unattended-upgrades 
     if (($?)); then exitError "impossible d'installer cron-APT" "120"; fi
 
      grep security /etc/apt/sources.list > /etc/apt/security.sources.list
@@ -18,7 +18,7 @@ MAILON=\"always\"
 " >> /etc/cron-apt/config
      if (($?)); then exitError "impossible de créé la config pour cron-APT" "122"; fi
     sed -i 's/dist-upgrade -d -y -o APT::Get::Show-Upgraded=true/dist-upgrade -y -o APT::Get::Show-Upgraded=true/g' /etc/apt/apt.conf.d/50unattended-upgrades 
-     if (($?)); then exitError "impossible de modifier la conf de croAPT "123"; fi
+     if (($?)); then exitError "impossible de modifier la conf de croAPT" "123"; fi
 }
 
 
