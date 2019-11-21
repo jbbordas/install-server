@@ -122,7 +122,7 @@ ecrirLog()
 # exemple: exitError "error message"
 exitError()
 {
-	ecrirLog "code erreur : $1" "ERROR"
+	ecrirLog "code erreur : $2" "ERROR"
 	ecrirLog $1 "ERROR"
 	command -V  $1 &>/dev/null
     if [ $? -eq 0 ]; then

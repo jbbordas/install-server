@@ -65,3 +65,4 @@ if (($?)); then exitError  "Impossible de modifier les drois du fichier de conf 
 #Les logs se situe : /var/log/clamav/clamav-YEAR-MONTH-DAY.log"
 bash /etc/cron.daily/clamscan_daily
 if (($?)); then exitError  "Impossible de lancer CLAMAV" "164"; fi
+}
