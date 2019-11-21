@@ -191,7 +191,7 @@ EOM
     ln -s /var/cache/munin/www /var/www/munin
     if (($?)); then exitError "impossible de créer un lien pour MUNIN" "111"; fi
     /etc/init.d/munin-node restart
-    iif (($?)); then exitError "impossible de redemarrer MUNIN" "112"; fi
+    if (($?)); then exitError "impossible de redemarrer MUNIN" "112"; fi
     htpasswd -cb /var/www/.htpasswd  ${SSH_USER} ${SSH_USER_PWD}
    if (($?)); then exitError "impossible de créer le htpasswprd pour MUNIN" "113"; fi
     ln -s /usr/share/munin/plugins/nginx_status /etc/munin/plugins/nginx_status
