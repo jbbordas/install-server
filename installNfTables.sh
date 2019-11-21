@@ -50,8 +50,8 @@ table inet filter {
         udp dport { http, https} ct state established,new accept
 
         # some ports you like
-        tcp dport { NTP, SMTP} ct state established,new accept
-        udp dport { NTP, SMTP} ct state established,new accept
+        tcp dport { 123, 25,1212} ct state established,new accept
+        udp dport { 123, 25,1212} ct state established,new accept
 
         ct state invalid drop
     }
