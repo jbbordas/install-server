@@ -85,10 +85,10 @@ protocol  = 0-255
     sed -i "s/mta = sendmail/mta = mail/g" /etc/fail2ban/jail.local
      if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087-6"; fi
     sed -i "s/action = %(action_)s/action = %(action_mwl)s/g" /etc/fail2ban/jail.local
-     if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087"; fi
-    sed -i "s/banaction = nftables-multiports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
+     if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087-7"; fi
+    sed -i "s/banaction = iptables-multiport/banaction = nftables-multiport/g" /etc/fail2ban/jail.local
      if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087-8"; fi
-    sed -i "s/banaction_allports = nftables-allports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
+    sed -i "s/banaction_allports = iptables-allports/banaction = nftables-multiports/g" /etc/fail2ban/jail.local
      if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087-9"; fi
     sed -i "s/chain = <known\/chain>s/chain = inputs/g" /etc/fail2ban/jail.local
      if (($?)); then exitError "impossible de modifier le fichier Jail.local de fail2ban" "087-10"; fi

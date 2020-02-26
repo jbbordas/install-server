@@ -204,8 +204,8 @@ EOM
 #if (($?)); then exit 75; fi
 #ln -s /usr/share/munin/plugins/nginx_request /etc/munin/plugins/exim_mailstats
 #if (($?)); then exit 76; fi
-ln -s /usr/share/munin/plugins/nginx_request /etc/munin/plugins/fail2ban
-if (($?)); then exitError "impossible de créer un lien pour MUNIN" "116"; fi
+#ln -s /usr/share/munin/plugins/nginx_request /etc/munin/plugins/fail2ban
+#if (($?)); then exitError "impossible de créer un lien pour MUNIN" "116"; fi
 
 }
 
